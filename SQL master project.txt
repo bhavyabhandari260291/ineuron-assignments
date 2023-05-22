@@ -1,0 +1,142 @@
+CREATE TABLE accidents3(
+Accident_Index varchar(100),
+Location_Easting_OSGR varchar(100),
+Location_Northing_OSGR varchar(100),
+Longitude varchar(100),
+Latitude varchar(100),
+Police_Force varchar(100),
+Accident_Severity varchar(100),
+Number_of_Vehicles varchar(100),
+Number_of_Casualties varchar(100),
+Date_Acc varchar(),
+Day_of_Week date,
+Time varchar(),
+Local_Authority_District varchar(100),
+Local_Authority_Highway varchar(100),
+first_Road_Class varchar(100),
+first_Road_Number varchar(100),
+Road_Type varchar(100),
+Speed_limit varchar(100),
+Junction_Detail varchar(100),
+Junction_Control varchar(100),
+second_Road_Class varchar(100),
+second_Road_Number varchar(100),
+Pedestrian_Crossing_Human_Control varchar(100),
+Pedestrian_Crossing_Physical_Facilities varchar(100),
+Light_Conditions varchar(100),
+Weather_Conditions varchar(100),
+Road_Surface_Conditions varchar(100),
+Special_Conditions_at_Site varchar(100),
+Carriageway_Hazards varchar(100),
+Urban_or_Rural_Area varchar(100),
+Did_Police_Officer_Attend_Scene_of_Accident varchar(100),
+LSOA_of_Accident_Location varchar(100)
+);
+
+drop table accidents
+DROP table accidents_median
+
+alter table accidents1
+modify time date
+
+CREATE TABLE vehicles2(
+Accident_Index varchar(100),
+Vehicle_Reference varchar(100),
+Vehicle_Type varchar(100),
+Towing_and_Articulation varchar(100),
+Vehicle_Manoeuvre varchar(100),
+Vehicle_Location_Restricted_Lane varchar(100),
+Junction_Location varchar(100),
+Skidding_and_Overturning varchar(100),
+Hit_Object_in_Carriageway varchar(100),
+Vehicle_Leaving_Carriageway varchar(100),
+Hit_Object_off_Carriageway varchar(100),
+First_Point_of_Impact varchar(100),
+Was_Vehicle_Left_Hand_Drive int,
+Journey_Purpose_of_Driver varchar(100),
+Sex_of_Driver varchar(100),
+Age_of_Driver varchar(100),
+Age_Band_of_Driver varchar(100),
+Engine_Capacity_CC varchar(100),
+Propulsion_Code varchar(100),
+Age_of_Vehicle varchar(100),
+Driver_IMD_Decile varchar(100),
+Driver_Home_Area_Type varchar(100), 
+Vehicle_IMD_Decile varchar(100)
+);
+
+CREATE TABLE vehicle_types1(
+	vehicle_code INT,
+    vehicle_type VARCHAR(100)
+);
+
+
+drop table vehicles1;
+
+select * from vehicles2;
+select * from vehicle_types1;
+
+select * from accidents3;
+
+
+--task1:Median Severity values of accident caused by motorbikes
+select median(accident_severity) from accidents3 a 
+join vehicles2 v on a.accident_index=v.accident_index
+join vehicle_types1 vt on v.vehicle_type =vt.vehicle_code
+where vt.vehicle_type like '%motorcycle%'
+group by vt.vehicle_type ;
+
+--task2:Evaluate accident severity  and total accidents per vehicle
+
+select v.vehicle_type, count(a.accident_index) as no_of_accidents from accidents3 a
+join vehicles2  v on a.accident_index=v.accident_index
+join vehicle_types1 vt on v.vehicle_type =vt.vehicle_code
+group by 1
+order by 1;
+
+select  count(a.accident_index) as no_of_accidents ,accident_severity from accidents3 a
+join vehicles2  v on a.accident_index=v.accident_index
+join vehicle_types1 vt on v.vehicle_type =vt.vehicle_code
+group by 2;
+
+--task 3:calculate average severity by vehicle type
+select avg(a.accident_severity),v.vehicle_type from accidents3 a 
+join vehicles2  v on a.accident_index=v.accident_index
+group by 2;
+
+--task4 :calculate average severity and total accidents by motorcycle
+select avg(a.accident_severity) , count(a.accident_index) as total_no_of_accidents from 
+accidents3 a join vehicles2  v on a.accident_index=v.accident_index
+join vehicle_types1 vt on v.vehicle_type =vt.vehicle_code
+where vt.vehicle_type like '%motorcycle%';
+
+
+
+
+use database bhavya
+create or replace table world_population(
+country varchar(200),
+area varchar(100),
+birth_rate varchar(100),
+death_rate varchar(100) ,
+infant_mortality_rate varchar() ,
+internet_user varchar(),
+life_exp_at_birth varchar(),
+maternal_mortality_rate varchar(),
+net_migration_rate varchar(),
+population int() ,
+population_growth_rate varchar());
+--task1
+select country from world_population where population=(select max(population)from world_population);
+--task2
+select country from world_population where population=(select min(population)from world_population);
+
+--task3
+select country from world_population where population_growth_rate=(select max(population_growth_rate)from world_population where population_growth_rate <>'NA' );
+--task4
+select country from world_population where population=(select max(population)from world_population);
+--task5
+select country,max(population)  from world_population
+where population <> 'NA'
+group by 1
+order by 2 desc;
